@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback System</title>
+    <style>
+        /* Clean, modern styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Username section */
+        .username-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .username-section input {
+            padding: 15px 20px;
+            font-size: 18px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-right: 10px;
+            width: 250px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        /* Main content */
+        .main-content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .content-header {
+            background: #f8f9fa;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .current-user {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Feedback form */
+        .feedback-form {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .feedback-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+
+        /* Feedback list */
+        .feedback-list {
+            padding: 20px;
+        }
+
+        .feedback-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: transform 0.2s;
+        }
+
+        .feedback-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .feedback-username {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .feedback-date {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .feedback-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feedback-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upvote-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border: 2px solid #48bb78;
+            background: white;
+            color: #48bb78;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .upvote-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .upvote-btn.voted {
+            background: #48bb78;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .username-section input {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .feedback-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💬 Feedback System</h1>
+            <p>Share your thoughts and help us improve</p>
+        </div>
+
+        <!-- Username Input Section -->
+        <div class="username-section" id="usernameSection">
+            <h3 style="margin-bottom: 20px;">Enter your username to continue</h3>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="usernameInput" placeholder="Your username" maxlength="50">
+                <button class="btn btn-primary" onclick="setUsername()">Enter</button>
+            </div>
+        </div>
+
+        <!-- Current User Display -->
+        <div class="current-user hidden" id="currentUserSection">
+            <div>
+                <strong>Welcome, <span id="currentUsername"></span>!</strong>
+            </div>
+            <button class="btn btn-outline" onclick="logout()">Change User</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content hidden" id="mainContent">
+            <!-- Header -->
+            <div class="content-header">
+                <h2>All Feedbacks</h2>
+                <button class="btn btn-success" onclick="toggleForm()" id="toggleFormBtn">
+                    ➕ Add Feedback
+                </button>
+            </div>
+
+            <!-- New Feedback Form -->
+            <div class="feedback-form hidden" id="feedbackForm">
+                <h3 style="margin-bottom: 15px;">Share Your Feedback</h3>
+                <textarea id="feedbackContent" placeholder="Write your feedback here..." required></textarea>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button class="btn btn-outline" onclick="cancelForm()">Cancel</button>
+                    <button class="btn btn-success" onclick="submitFeedback()">Submit</button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div id="messages"></div>
+
+            <!-- Feedback List -->
+            <div class="feedback-list">
+                <div class="loading" id="loading">
+                    <div>🔄 Loading feedbacks...</div>
+                </div>
+                
+                <div class="empty-state hidden" id="emptyState">
+                    <h3>No feedbacks yet</h3>
+                    <p>Be the first to share your thoughts!</p>
+                </div>
+
+                <div id="feedbackList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = '';
+        let feedbacks = [];
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Allow Enter key on username input
+            document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') setUsername();
+            });
+        });
+
+        // Set username and show main interface
+        function setUsername() {
+            const username = document.getElementById('usernameInput').value.trim();
+            
+            // Simple validation
+            if (!username) {
+                showMessage('Please enter a username', 'error');
+                return;
+            }
+            
+            if (username.length > 50) {
+                showMessage('Username too long (max 50 characters)', 'error');
+                return;
+            }
+            
+            // Set current user and show main content
+            currentUser = username;
+            showMainContent();
+            loadFeedbacks();
+        }
+
+        // Show main content and hide username section
+        function showMainContent() {
+            document.getElementById('usernameSection').classList.add('hidden');
+            document.getElementById('currentUserSection').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('currentUsername').textContent = currentUser;
+        }
+
+        // Logout and return to username input
+        function logout() {
+            currentUser = '';
+            document.getElementById('usernameSection').classList.remove('hidden');
+            document.getElementById('currentUserSection').classList.add('hidden');
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('usernameInput').value = '';
+            clearMessages();
+        }
+
+        // Toggle feedback form visibility
+        function toggleForm() {
+            const form = document.getElementById('feedbackForm');
+            const btn = document.getElementById('toggleFormBtn');
+            
+            if (form.classList.contains('hidden')) {
+                form.classList.remove('hidden');
+                btn.textContent = '❌ Cancel';
+                document.getElementById('feedbackContent').focus();
+            } else {
+                form.classList.add('hidden');
+                btn.textContent = '➕ Add Feedback';
+                document.getElementById('feedbackContent').value = '';
+            }
+        }
+
+        // Cancel form
+        function cancelForm() {
+            document.getElementById('feedbackForm').classList.add('hidden');
+            document.getElementById('toggleFormBtn').textContent = '➕ Add Feedback';
+            document.getElementById('feedbackContent').value = '';
+        }
+
+        // Submit new feedback
+        async function submitFeedback() {
+            const content = document.getElementById('feedbackContent').value.trim();
+            
+            // Validation
+            if (!content) {
+                showMessage('Please enter feedback content', 'error');
+                return;
+            }
+            
+            if (content.length < 5) {
+                showMessage('Feedback must be at least 5 characters', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/feedbacks/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        username: currentUser
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('Feedback submitted successfully!', 'success');
+                    cancelForm();
+                    loadFeedbacks(); // Reload feedbacks
+                } else {
+                    showMessage(data.error || 'Error submitting feedback', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // Load all feedbacks from server
+        async function loadFeedbacks() {
+            try {
+                document.getElementById('loading').classList.remove('hidden');
+                
+                const response = await fetch(`/api/feedbacks/?username=${encodeURIComponent(currentUser)}`);
+                const data = await response.json();
+                
+                feedbacks = data.feedbacks || [];
+                renderFeedbacks();
+                
+            } catch (error) {
+                showMessage('Error loading feedbacks', 'error');
+                console.error('Error:', error);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        // Render feedbacks list in HTML
+        function renderFeedbacks() {
+            const feedbackList = document.getElementById('feedbackList');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (feedbacks.length === 0) {
+                emptyState.classList.remove('hidden');
+                feedbackList.innerHTML = '';
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            // Create HTML for each feedback
+            feedbackList.innerHTML = feedbacks.map(feedback => `
+                <div class="feedback-item">
+                    <div class="feedback-header">
+                        <span class="feedback-username">${escapeHtml(feedback.username)}</span>
+                        <span class="feedback-date">${formatDate(feedback.created_at)}</span>
+                    </div>
+                    <div class="feedback-content">
+                        ${escapeHtml(feedback.content)}
+                    </div>
+                    <div class="feedback-actions">
+                        <button class="upvote-btn ${feedback.user_has_voted ? 'voted' : ''}" 
+                                onclick="toggleVote(${feedback.id})">
+                            👍 ${feedback.upvote_count} ${feedback.upvote_count === 1 ? 'upvote' : 'upvotes'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Toggle upvote for a feedback
+        async function toggleVote(feedbackId) {
+            try {
+                const response = await fetch(`/api/feedbacks/${feedbackId}/vote/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: currentUser
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update local feedback data
+                    const feedback = feedbacks.find(f => f.id === feedbackId);
+                    if (feedback) {
+                        feedback.upvote_count = data.upvote_count;
+                        feedback.user_has_voted = data.user_has_voted;
+                    }
+                    
+                    // Re-render feedbacks
+                    renderFeedbacks();
+                    
+                    // Show success message
+                    const action = data.action === 'added' ? 'added' : 'removed';
+                    showMessage(`Vote ${action} successfully!`, 'success');
+                } else {
+                    showMessage(data.error || 'Error voting', 'error');
+                }
+                
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // Utility function to show messages
+        function showMessage(message, type) {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = `<div class="message ${type}">${message}</div>`;
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                messagesDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // Clear all messages
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        // Utility to escape HTML and prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+    </script>
+</body>
+</html>
