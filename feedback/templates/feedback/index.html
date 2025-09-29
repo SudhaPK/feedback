@@ -293,9 +293,8 @@
             <!-- Header -->
             <div class="content-header">
                 <h2>All Feedbacks</h2>
-                <button class="btn btn-success" onclick="toggleForm()" id="toggleFormBtn">
-                    ➕ Add Feedback
-                </button>
+                <button class="btn btn-success" onclick="toggleForm()" id="toggleFormBtn">➕ Add Feedback</button>
+                <button class="btn btn-primary" onclick="logout()" style="background: #dc3545;">Logout</button>
             </div>
 
             <!-- New Feedback Form -->
@@ -439,6 +438,7 @@
                     showMessage(data.error || 'Error submitting feedback', 'error');
                 }
             } catch (error) {
+
                 showMessage('Network error. Please try again.', 'error');
                 console.error('Error:', error);
             }
@@ -563,6 +563,16 @@
             const date = new Date(dateString);
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
+
+function logout() {
+    currentUser = '';
+    document.getElementById('usernameInput').value = '';
+    document.getElementById('usernameSection').classList.remove('hidden');
+    document.getElementById('currentUserSection').classList.add('hidden');
+    document.getElementById('mainContent').classList.add('hidden');
+    document.getElementById('feedbackList').innerHTML = '';
+    showMessage('Logged out successfully!', 'success');
+}
     </script>
 </body>
 </html>
